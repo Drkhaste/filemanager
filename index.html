@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Repo Manager</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📁</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Repo Manager</h1>
+    <p class="sub">Browse, edit and commit to your GitHub repositories from any device.</p>
+    <div id="login-error" class="login-error hidden"></div>
+    <div class="field">
+      <label for="pat-input">Personal access token</label>
+      <input id="pat-input" type="password" placeholder="ghp_..." autocomplete="off">
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-1);margin-bottom:16px;">
+      <input id="remember-token" type="checkbox" checked style="width:auto;">
+      Remember this token on this device
+    </label>
+    <button id="login-btn" class="btn btn-primary">Connect to GitHub</button>
+    <p class="login-help">
+      Create a token with <code>repo</code> scope at
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=Repo%20Manager" target="_blank" rel="noopener">github.com/settings/tokens</a>.
+      The token is stored only in this browser and used solely to call the GitHub API directly — no server ever sees it.
+    </p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span> Repo Manager</div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="theme-toggle" title="Toggle theme">◐</button>
+    <div class="user-chip" id="user-chip"></div>
+    <button class="icon-btn" id="logout-btn" title="Disconnect">⏻</button>
+  </div>
+
+  <aside class="rail mobile-active" id="rail">
+    <div class="rail-search">
+      <input type="search" id="repo-search" placeholder="Filter repositories…">
+    </div>
+    <ul class="repo-list" id="repo-list"></ul>
+  </aside>
+
+  <section class="tree-pane" id="tree-pane">
+    <div class="tree-toolbar">
+      <select id="branch-select" title="Branch"></select>
+      <input type="search" id="file-search" placeholder="Search files…">
+      <button class="icon-btn" id="refresh-tree-btn" title="Refresh">⟳</button>
+    </div>
+    <div class="breadcrumbs" id="breadcrumbs"></div>
+    <div class="file-tree" id="file-tree">
+      <div class="tree-empty">Select a repository to browse its files.</div>
+    </div>
+    <div style="padding:8px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn" id="new-file-btn" style="flex:1;font-size:12px;padding:6px 8px;">+ File</button>
+      <button class="btn" id="new-folder-btn" style="flex:1;font-size:12px;padding:6px 8px;">+ Folder</button>
+      <button class="btn" id="upload-btn" style="flex:1;font-size:12px;padding:6px 8px;">Upload</button>
+      <input type="file" id="upload-input" class="hidden">
+    </div>
+  </section>
+
+  <section class="main-pane" id="main-pane">
+    <div class="main-tabs hidden" id="main-tabs">
+      <button class="main-tab active" data-tab="editor">Editor</button>
+      <button class="main-tab" data-tab="history">History</button>
+    </div>
+    <div id="empty-state" class="empty-state">
+      <div class="big">📄</div>
+      <div>Pick a file from the tree to view or edit it.</div>
+    </div>
+    <div id="editor-view" class="hidden" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+      <div class="main-toolbar dirty" id="editor-toolbar">
+        <span class="dirty-dot"></span>
+        <span class="path" id="current-path"></span>
+        <button class="icon-btn" id="preview-toggle-btn" title="Toggle Markdown preview">Preview</button>
+        <button class="icon-btn" id="download-btn" title="Download file">Download</button>
+        <button class="icon-btn" id="rename-btn" title="Rename / move">Rename</button>
+        <button class="icon-btn" id="delete-file-btn" title="Delete file">Delete</button>
+        <button class="btn btn-primary" id="save-btn" style="width:auto;padding:6px 14px;font-size:12.5px;">Commit</button>
+      </div>
+      <div class="editor-container">
+        <div id="monaco-host"></div>
+        <div id="md-preview" class="md-preview hidden"></div>
+      </div>
+    </div>
+    <div id="diff-view" class="hidden" style="flex:1;min-height:0;position:relative;">
+      <div class="editor-container"><div id="diff-host"></div></div>
+    </div>
+    <div id="history-view" class="hidden history-panel"></div>
+  </section>
+
+  <div class="mobile-tab-bar" id="mobile-tab-bar">
+    <button data-pane="rail" class="active">Repos</button>
+    <button data-pane="tree-pane">Files</button>
+    <button data-pane="main-pane">Editor</button>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast-stack" id="toast-stack"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
